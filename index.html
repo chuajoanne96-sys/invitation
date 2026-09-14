@@ -71,18 +71,24 @@
     color: #a8321f;
     letter-spacing: 16px;
     margin-bottom: 16px;
+    /* 加强白色发光 + 深色阴影 */
     text-shadow:
-      0 1px 2px rgba(255, 240, 210, 0.9),
-      0 2px 6px rgba(140, 40, 20, 0.25);
+      0 1px 3px rgba(255, 255, 255, 1),
+      0 0 15px rgba(255, 255, 255, 0.9),
+      0 2px 8px rgba(140, 40, 20, 0.35);
   }
   #welcome .subtitle {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
     font-size: 1.2em;
-    font-weight: 500;
-    color: #8b5a2e;
+    font-weight: 600;
+    color: #6e3a18;                              /* 加深颜色 */
     letter-spacing: 8px;
     margin-bottom: 46px;
-    opacity: 0.9;
+    /* 白色描边让字凸显 */
+    text-shadow:
+      0 1px 3px rgba(255, 255, 255, 1),
+      0 0 10px rgba(255, 255, 255, 0.95),
+      0 2px 6px rgba(110, 60, 20, 0.4);
   }
   #welcome .checkin-btn {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
@@ -95,6 +101,8 @@
     border-radius: 8px;
     cursor: pointer;
     background: linear-gradient(160deg, #c8a84a, #a8321f);
+    /* 按钮文字加阴影，更清晰 */
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
     box-shadow:
       0 0 0 2px rgba(255, 245, 224, 0.9),
       0 0 0 4px rgba(200, 168, 74, 0.6),
@@ -124,9 +132,7 @@
     display: none;
     align-items: center;
     justify-content: center;
-    /* ⬇️ 改成完全透明，背景的 background.gif 完整显示 */
     background: transparent;
-    /* 去掉毛玻璃效果，背景图不变形 */
     opacity: 0;
     transition: opacity 0.6s ease;
   }
@@ -142,11 +148,10 @@
     padding: 54px 50px 44px;
     border-radius: 6px;
     text-align: center;
-    /* 卡片本身半透明，背景图能透过来 */
     background: linear-gradient(160deg,
-      rgba(255, 245, 224, 0.72) 0%,
-      rgba(248, 233, 200, 0.62) 55%,
-      rgba(238, 212, 168, 0.58) 100%);
+      rgba(255, 245, 224, 0.82) 0%,
+      rgba(248, 233, 200, 0.75) 55%,
+      rgba(238, 212, 168, 0.72) 100%);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow:
@@ -217,7 +222,6 @@
     letter-spacing: 5px;
     margin-bottom: 8px;
     margin-left: 4px;
-    text-shadow: 0 1px 2px rgba(255, 245, 224, 0.9);
   }
   .invite-form input,
   .invite-form textarea {
@@ -228,7 +232,7 @@
     padding: 13px 16px;
     border: 1px solid rgba(200, 168, 74, 0.7);
     border-radius: 4px;
-    background: rgba(255, 250, 235, 0.85);
+    background: rgba(255, 250, 235, 0.9);
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
     letter-spacing: 2px;
@@ -260,6 +264,7 @@
     border-radius: 4px;
     cursor: pointer;
     background: linear-gradient(160deg, #c8a84a, #a8321f);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
     box-shadow:
       0 0 0 1px rgba(255, 245, 224, 0.9),
       0 0 0 3px rgba(200, 168, 74, 0.5),
@@ -308,8 +313,6 @@
     font-weight: 400;
     color: #8b5a2e;
     letter-spacing: 5px;
-    opacity: 0.9;
-    text-shadow: 0 1px 2px rgba(255, 245, 224, 0.9);
   }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(15px); }
@@ -341,7 +344,6 @@
 </head>
 <body>
 
-<!-- 🏔 背景：background.gif -->
 <div id="landscape">
   <img class="painting" src="background.gif" alt="山水畫">
 </div>
