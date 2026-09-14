@@ -23,7 +23,7 @@
     color: #5c3a1f;
   }
 
-  /* 🏔 背景：background.gif */
+  /* 🏔 背景 */
   #landscape { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
   #landscape .painting {
     position: absolute; inset: 0; width: 100%; height: 100%;
@@ -57,39 +57,62 @@
     100% { transform: translateY(110vh) translateX(var(--drift, 20px)) scale(1); opacity: 0; }
   }
 
-  /* ===== 第一頁：打卡按鈕 ===== */
+  /* ===== 第一頁 ===== */
   #welcome {
     position: relative;
     z-index: 10;
     text-align: center;
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
+
+  /* 米色半透明框，包含：标题两行 + 打卡按钮 */
+  #welcome .title-box {
+    display: inline-block;
+    padding: 50px 80px 44px;                    /* ← 增加内边距，容纳按钮 */
+    background: linear-gradient(160deg,
+      rgba(255, 245, 224, 0.82) 0%,
+      rgba(248, 233, 200, 0.75) 55%,
+      rgba(238, 212, 168, 0.7) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-radius: 8px;
+    box-shadow:
+      0 0 0 1px rgba(200, 168, 74, 0.7),
+      0 0 0 5px rgba(255, 245, 224, 0.5),
+      0 0 0 6px rgba(168, 50, 31, 0.3),
+      0 15px 40px rgba(90, 45, 20, 0.3),
+      0 0 50px rgba(200, 168, 74, 0.25);
+  }
+
+  /* 「歡迎蒞臨」 */
   #welcome .title {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 3em;
+    font-size: 2.6em;
     font-weight: 600;
     color: #a8321f;
     letter-spacing: 16px;
-    margin-bottom: 16px;
-    /* 加强白色发光 + 深色阴影 */
+    margin-bottom: 12px;
     text-shadow:
       0 1px 3px rgba(255, 255, 255, 1),
       0 0 15px rgba(255, 255, 255, 0.9),
-      0 2px 8px rgba(140, 40, 20, 0.35);
+      0 2px 8px rgba(140, 40, 20, 0.3);
   }
+
+  /* 「聖德安座設壇」—— 比欢迎莅临大 */
   #welcome .subtitle {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #6e3a18;                              /* 加深颜色 */
-    letter-spacing: 8px;
-    margin-bottom: 46px;
-    /* 白色描边让字凸显 */
+    font-size: 3.6em;
+    font-weight: 700;
+    color: #6e3a18;
+    letter-spacing: 12px;
+    margin-bottom: 40px;                        /* ← 和按钮之间的间距 */
     text-shadow:
       0 1px 3px rgba(255, 255, 255, 1),
-      0 0 10px rgba(255, 255, 255, 0.95),
-      0 2px 6px rgba(110, 60, 20, 0.4);
+      0 0 15px rgba(255, 255, 255, 0.95),
+      0 2px 8px rgba(110, 60, 20, 0.4);
   }
+
+  /* 打卡按钮（现在在框内）*/
   #welcome .checkin-btn {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
     font-size: 1.5em;
@@ -101,7 +124,6 @@
     border-radius: 8px;
     cursor: pointer;
     background: linear-gradient(160deg, #c8a84a, #a8321f);
-    /* 按钮文字加阴影，更清晰 */
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
     box-shadow:
       0 0 0 2px rgba(255, 245, 224, 0.9),
@@ -350,11 +372,13 @@
 
 <div id="goldDust"></div>
 
-<!-- 第一頁 -->
+<!-- 第一頁（按钮已移入框内）-->
 <div id="welcome">
-  <div class="title">歡迎蒞臨</div>
-  <div class="subtitle">聖德安座設壇</div>
-  <button class="checkin-btn" id="checkinBtn">點 擊 打 卡</button>
+  <div class="title-box">
+    <div class="title">歡迎蒞臨</div>
+    <div class="subtitle">聖德安座設壇</div>
+    <button class="checkin-btn" id="checkinBtn">點 擊 打 卡</button>
+  </div>
 </div>
 
 <!-- 邀請函 -->
