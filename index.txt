@@ -1,0 +1,477 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<title>聖德安座設壇 · 電子打卡</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+
+  body {
+    overflow: hidden;
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", "楷體", "SimSun", "宋體", serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: #f5e8d0;
+    color: #5c3a1f;
+  }
+
+  /* 🏔 背景：background.gif */
+  #landscape { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+  #landscape .painting {
+    position: absolute; inset: 0; width: 100%; height: 100%;
+    object-fit: cover; opacity: 1;
+    animation: paintingBreath 60s ease-in-out infinite alternate;
+  }
+  @keyframes paintingBreath {
+    0%   { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.03) translate(-0.5%, -0.5%); }
+  }
+
+  /* 金粉 + 朱紅光點 */
+  #goldDust { position: fixed; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
+  .dust {
+    position: absolute; top: -20px; border-radius: 50%;
+    animation: fall linear infinite; opacity: 0;
+  }
+  .dust.gold {
+    width: 5px; height: 5px;
+    background: radial-gradient(circle, #fff1c9 0%, #e0be62 45%, rgba(200, 162, 60, 0) 70%);
+    box-shadow: 0 0 6px rgba(220, 190, 100, 0.8);
+  }
+  .dust.red {
+    width: 4px; height: 4px;
+    background: radial-gradient(circle, #ffd0b0 0%, #d44a2a 45%, rgba(180, 50, 20, 0) 70%);
+    box-shadow: 0 0 5px rgba(212, 74, 42, 0.6);
+  }
+  @keyframes fall {
+    0% { transform: translateY(-20px) translateX(0) scale(0.6); opacity: 0; }
+    15% { opacity: 0.7; } 85% { opacity: 0.5; }
+    100% { transform: translateY(110vh) translateX(var(--drift, 20px)) scale(1); opacity: 0; }
+  }
+
+  /* ===== 第一頁：打卡按鈕 ===== */
+  #welcome {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #welcome .title {
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 3em;
+    font-weight: 600;
+    color: #a8321f;
+    letter-spacing: 16px;
+    margin-bottom: 16px;
+    text-shadow:
+      0 1px 2px rgba(255, 240, 210, 0.9),
+      0 2px 6px rgba(140, 40, 20, 0.25);
+  }
+  #welcome .subtitle {
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 1.2em;
+    font-weight: 500;
+    color: #8b5a2e;
+    letter-spacing: 8px;
+    margin-bottom: 46px;
+    opacity: 0.9;
+  }
+  #welcome .checkin-btn {
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 1.5em;
+    font-weight: 500;
+    color: #fff5e0;
+    letter-spacing: 10px;
+    padding: 20px 68px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: linear-gradient(160deg, #c8a84a, #a8321f);
+    box-shadow:
+      0 0 0 2px rgba(255, 245, 224, 0.9),
+      0 0 0 4px rgba(200, 168, 74, 0.6),
+      0 8px 22px rgba(140, 40, 20, 0.35),
+      inset 0 1px 0 rgba(255, 240, 200, 0.6),
+      inset 0 -1px 0 rgba(80, 20, 10, 0.35);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  #welcome .checkin-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 0 0 2px rgba(255, 245, 224, 1),
+      0 0 0 4px rgba(200, 168, 74, 0.85),
+      0 12px 30px rgba(140, 40, 20, 0.45),
+      inset 0 1px 0 rgba(255, 240, 200, 0.7),
+      inset 0 -1px 0 rgba(80, 20, 10, 0.35);
+  }
+  #welcome .checkin-btn:active {
+    transform: translateY(1px);
+  }
+
+  /* ===== 邀請函彈窗 ===== */
+  #invitation {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    /* ⬇️ 改成完全透明，背景的 background.gif 完整显示 */
+    background: transparent;
+    /* 去掉毛玻璃效果，背景图不变形 */
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  #invitation.show {
+    display: flex;
+    opacity: 1;
+  }
+
+  .invite-card {
+    position: relative;
+    width: min(580px, 92vw);
+    max-height: 92vh;
+    padding: 54px 50px 44px;
+    border-radius: 6px;
+    text-align: center;
+    /* 卡片本身半透明，背景图能透过来 */
+    background: linear-gradient(160deg,
+      rgba(255, 245, 224, 0.72) 0%,
+      rgba(248, 233, 200, 0.62) 55%,
+      rgba(238, 212, 168, 0.58) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-shadow:
+      0 0 0 1px rgba(200, 168, 74, 0.8),
+      0 0 0 6px rgba(255, 245, 224, 0.5),
+      0 0 0 7px rgba(168, 50, 31, 0.35),
+      0 20px 55px rgba(90, 45, 20, 0.45),
+      0 0 80px rgba(200, 168, 74, 0.3),
+      inset 0 0 60px rgba(220, 195, 140, 0.2);
+    transform: scale(0.85) translateY(30px);
+    opacity: 0;
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
+    overflow-y: auto;
+  }
+  #invitation.show .invite-card {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+  }
+
+  .invite-card::before {
+    content: "";
+    position: absolute;
+    inset: 16px;
+    border: 1px solid rgba(200, 168, 74, 0.55);
+    pointer-events: none;
+    border-radius: 3px;
+  }
+  .invite-card::after {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 12px 12px, rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px),
+      radial-gradient(circle at calc(100% - 12px) 12px, rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px),
+      radial-gradient(circle at 12px calc(100% - 12px), rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px),
+      radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px);
+  }
+
+  .invite-card .deco-line {
+    width: 70%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #a8321f, #d8b968, #a8321f, transparent);
+    margin: 22px auto 30px;
+    box-shadow: 0 0 6px rgba(168, 50, 31, 0.4);
+  }
+
+  .invite-title {
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 2.2em;
+    font-weight: 600;
+    color: #a8321f;
+    letter-spacing: 10px;
+    line-height: 1.6;
+    text-shadow:
+      0 1px 3px rgba(255, 245, 224, 1),
+      0 0 12px rgba(255, 245, 224, 0.7),
+      0 2px 5px rgba(140, 40, 20, 0.25);
+  }
+
+  .invite-form { text-align: left; margin-top: 6px; }
+  .invite-form label {
+    display: block;
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 1em;
+    font-weight: 500;
+    color: #8b5a2e;
+    letter-spacing: 5px;
+    margin-bottom: 8px;
+    margin-left: 4px;
+    text-shadow: 0 1px 2px rgba(255, 245, 224, 0.9);
+  }
+  .invite-form input,
+  .invite-form textarea {
+    width: 100%;
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 1.15em;
+    color: #5c3a1f;
+    padding: 13px 16px;
+    border: 1px solid rgba(200, 168, 74, 0.7);
+    border-radius: 4px;
+    background: rgba(255, 250, 235, 0.85);
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+    letter-spacing: 2px;
+  }
+  .invite-form input:focus,
+  .invite-form textarea:focus {
+    border-color: #a8321f;
+    background: #fffaf0;
+    box-shadow: 0 0 0 3px rgba(168, 50, 31, 0.12), 0 0 12px rgba(200, 168, 74, 0.3);
+  }
+  .invite-form textarea {
+    min-height: 90px;
+    resize: vertical;
+    line-height: 1.6;
+  }
+  .invite-form .field { margin-bottom: 22px; }
+
+  .submit-btn {
+    display: block;
+    width: 100%;
+    margin-top: 8px;
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 1.15em;
+    font-weight: 500;
+    color: #fff5e0;
+    letter-spacing: 10px;
+    padding: 15px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    background: linear-gradient(160deg, #c8a84a, #a8321f);
+    box-shadow:
+      0 0 0 1px rgba(255, 245, 224, 0.9),
+      0 0 0 3px rgba(200, 168, 74, 0.5),
+      0 5px 14px rgba(140, 40, 20, 0.35),
+      inset 0 1px 0 rgba(255, 240, 200, 0.5);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  .submit-btn:hover {
+    transform: translateY(-1px);
+    box-shadow:
+      0 0 0 1px rgba(255, 245, 224, 1),
+      0 0 0 3px rgba(200, 168, 74, 0.7),
+      0 7px 20px rgba(140, 40, 20, 0.45),
+      inset 0 1px 0 rgba(255, 240, 200, 0.6);
+  }
+  .submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .thank-you {
+    display: none;
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    color: #a8321f;
+    text-align: center;
+    padding: 30px 0;
+    animation: fadeIn 0.8s ease;
+  }
+  .thank-you.show { display: block; }
+  .thank-you .big {
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 2.2em;
+    font-weight: 600;
+    letter-spacing: 10px;
+    color: #a8321f;
+    margin-bottom: 14px;
+    text-shadow:
+      0 1px 3px rgba(255, 245, 224, 1),
+      0 0 12px rgba(255, 245, 224, 0.7),
+      0 2px 5px rgba(140, 40, 20, 0.25);
+  }
+  .thank-you .small {
+    font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
+    font-size: 1em;
+    font-weight: 400;
+    color: #8b5a2e;
+    letter-spacing: 5px;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(255, 245, 224, 0.9);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(15px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 20px; right: 24px;
+    width: 32px; height: 32px;
+    font-size: 1em;
+    color: #a8321f;
+    background: rgba(255, 245, 224, 0.6);
+    border: 1px solid rgba(168, 50, 31, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .close-btn:hover {
+    color: #fff5e0;
+    background: #a8321f;
+    border-color: #a8321f;
+  }
+</style>
+</head>
+<body>
+
+<!-- 🏔 背景：background.gif -->
+<div id="landscape">
+  <img class="painting" src="background.gif" alt="山水畫">
+</div>
+
+<div id="goldDust"></div>
+
+<!-- 第一頁 -->
+<div id="welcome">
+  <div class="title">歡迎蒞臨</div>
+  <div class="subtitle">聖德安座設壇</div>
+  <button class="checkin-btn" id="checkinBtn">點 擊 打 卡</button>
+</div>
+
+<!-- 邀請函 -->
+<div id="invitation">
+  <div class="invite-card">
+    <button class="close-btn" id="closeBtn">✕</button>
+
+    <div class="invite-title">歡迎蒞臨<br>聖德安座設壇</div>
+    <div class="deco-line"></div>
+
+    <form class="invite-form" id="inviteForm">
+      <div class="field">
+        <label for="nameInput">姓 名</label>
+        <input type="text" id="nameInput" placeholder="請輸入您的姓名" required maxlength="20">
+      </div>
+      <div class="field">
+        <label for="msgInput">祝 福</label>
+        <textarea id="msgInput" placeholder="請輸入您的祝福" required maxlength="200"></textarea>
+      </div>
+      <button type="submit" class="submit-btn" id="submitBtn">送 出 祝 福</button>
+    </form>
+
+    <div class="thank-you" id="thankYou">
+      <div class="big">感 恩 有 您</div>
+      <div class="small">您的祝福已收到，謝謝蒞臨</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbyB8qh5Yrem1ZsaT8VogIlLUHsaZSjkjOu18tCqGuztY45uIlAPJUmPmtfDEtytbjW7WQ/exec";
+
+  (function createDust() {
+    const container = document.getElementById("goldDust");
+    const COUNT = 28;
+    for (let i = 0; i < COUNT; i++) {
+      const d = document.createElement("div");
+      d.className = "dust " + (i % 3 === 0 ? "red" : "gold");
+      d.style.left = Math.random() * 100 + "vw";
+      d.style.animationDuration = (14 + Math.random() * 14) + "s";
+      d.style.animationDelay = (-Math.random() * 25) + "s";
+      d.style.setProperty("--drift", ((Math.random() - 0.5) * 90) + "px");
+      container.appendChild(d);
+    }
+  })();
+
+  const welcome    = document.getElementById("welcome");
+  const invitation = document.getElementById("invitation");
+  const checkinBtn = document.getElementById("checkinBtn");
+  const closeBtn   = document.getElementById("closeBtn");
+  const inviteForm = document.getElementById("inviteForm");
+  const submitBtn  = document.getElementById("submitBtn");
+  const thankYou   = document.getElementById("thankYou");
+  const nameInput  = document.getElementById("nameInput");
+  const msgInput   = document.getElementById("msgInput");
+
+  checkinBtn.addEventListener("click", () => {
+    welcome.style.opacity = "0";
+    welcome.style.transform = "scale(0.98)";
+    setTimeout(() => {
+      welcome.style.display = "none";
+      invitation.classList.add("show");
+    }, 400);
+  });
+
+  closeBtn.addEventListener("click", () => {
+    invitation.classList.remove("show");
+    setTimeout(() => {
+      welcome.style.display = "block";
+      welcome.style.opacity = "1";
+      welcome.style.transform = "scale(1)";
+    }, 400);
+  });
+
+  inviteForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const name = nameInput.value.trim();
+    const msg  = msgInput.value.trim();
+    if (!name || !msg) return;
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "傳 送 中...";
+
+    try {
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify({ name, msg })
+      });
+      const json = await res.json();
+      if (json.ok) {
+        inviteForm.style.display = "none";
+        thankYou.classList.add("show");
+        setTimeout(() => {
+          invitation.classList.remove("show");
+          setTimeout(() => {
+            welcome.style.display = "block";
+            welcome.style.opacity = "1";
+            welcome.style.transform = "scale(1)";
+            inviteForm.reset();
+            inviteForm.style.display = "block";
+            thankYou.classList.remove("show");
+            submitBtn.disabled = false;
+            submitBtn.textContent = "送 出 祝 福";
+          }, 400);
+        }, 3000);
+      } else {
+        alert("送出失敗，請再試一次。");
+        submitBtn.disabled = false;
+        submitBtn.textContent = "送 出 祝 福";
+      }
+    } catch (err) {
+      console.error(err);
+      alert("網路錯誤，請再試一次。");
+      submitBtn.disabled = false;
+      submitBtn.textContent = "送 出 祝 福";
+    }
+  });
+</script>
+
+</body>
+</html>
