@@ -2,6 +2,7 @@
 <html lang="zh-Hant">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>聖德安座設壇 · 電子打卡</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -9,7 +10,12 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+  }
   html, body { height: 100%; }
 
   body {
@@ -21,6 +27,10 @@
     position: relative;
     background: #f5e8d0;
     color: #5c3a1f;
+    /* 手机触摸优化 */
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    touch-action: manipulation;
   }
 
   /* 🏔 背景 */
@@ -62,36 +72,41 @@
     position: relative;
     z-index: 10;
     text-align: center;
+    width: 100%;
+    padding: 20px;                              /* 手机边缘留白 */
     transition: opacity 0.6s ease, transform 0.6s ease;
   }
 
-  /* 米色半透明框，包含：标题两行 + 打卡按钮 */
+  /* 米色半透明框 */
   #welcome .title-box {
     display: inline-block;
-    padding: 50px 80px 44px;                    /* ← 增加内边距，容纳按钮 */
+    width: 90vw;                                /* 手机屏幕的 90% 宽 */
+    max-width: 440px;                           /* 平板/电脑上不要太大 */
+    padding: 8vw 6vw;                           /* 内边距用 vw，随屏幕缩放 */
     background: linear-gradient(160deg,
       rgba(255, 245, 224, 0.82) 0%,
       rgba(248, 233, 200, 0.75) 55%,
       rgba(238, 212, 168, 0.7) 100%);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
-    border-radius: 8px;
+    border-radius: 12px;
     box-shadow:
       0 0 0 1px rgba(200, 168, 74, 0.7),
-      0 0 0 5px rgba(255, 245, 224, 0.5),
-      0 0 0 6px rgba(168, 50, 31, 0.3),
-      0 15px 40px rgba(90, 45, 20, 0.3),
-      0 0 50px rgba(200, 168, 74, 0.25);
+      0 0 0 4px rgba(255, 245, 224, 0.5),
+      0 0 0 5px rgba(168, 50, 31, 0.3),
+      0 12px 30px rgba(90, 45, 20, 0.3),
+      0 0 40px rgba(200, 168, 74, 0.25);
   }
 
   /* 「歡迎蒞臨」 */
   #welcome .title {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 2.6em;
+    font-size: clamp(1.6rem, 6vw, 2.4rem);      /* 手机自适应 */
     font-weight: 600;
     color: #a8321f;
-    letter-spacing: 16px;
-    margin-bottom: 12px;
+    letter-spacing: 0.6em;                      /* 用 em 而不是 px，随字号缩放 */
+    margin-bottom: 0.4em;
+    padding-left: 0.6em;                        /* 补偿字间距 */
     text-shadow:
       0 1px 3px rgba(255, 255, 255, 1),
       0 0 15px rgba(255, 255, 255, 0.9),
@@ -101,25 +116,29 @@
   /* 「聖德安座設壇」—— 比欢迎莅临大 */
   #welcome .subtitle {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 3.6em;
+    font-size: clamp(2rem, 8.5vw, 3.2rem);      /* 手机更大 */
     font-weight: 700;
     color: #6e3a18;
-    letter-spacing: 12px;
-    margin-bottom: 40px;                        /* ← 和按钮之间的间距 */
+    letter-spacing: 0.35em;
+    margin-bottom: 1.2em;
+    padding-left: 0.35em;
+    line-height: 1.2;
     text-shadow:
       0 1px 3px rgba(255, 255, 255, 1),
       0 0 15px rgba(255, 255, 255, 0.95),
       0 2px 8px rgba(110, 60, 20, 0.4);
   }
 
-  /* 打卡按钮（现在在框内）*/
+  /* 打卡按钮 */
   #welcome .checkin-btn {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 1.5em;
+    font-size: clamp(1.1rem, 4.5vw, 1.5rem);
     font-weight: 500;
     color: #fff5e0;
-    letter-spacing: 10px;
-    padding: 20px 68px;
+    letter-spacing: 0.5em;
+    padding: 0.9em 2em 0.9em 2.5em;            /* 右侧多留，因为字间距 */
+    width: 100%;
+    max-width: 320px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
@@ -131,19 +150,19 @@
       0 8px 22px rgba(140, 40, 20, 0.35),
       inset 0 1px 0 rgba(255, 240, 200, 0.6),
       inset 0 -1px 0 rgba(80, 20, 10, 0.35);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    /* 手机触摸优化 */
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  #welcome .checkin-btn:hover {
-    transform: translateY(-2px);
+  #welcome .checkin-btn:active {
+    transform: translateY(2px) scale(0.98);
     box-shadow:
       0 0 0 2px rgba(255, 245, 224, 1),
       0 0 0 4px rgba(200, 168, 74, 0.85),
-      0 12px 30px rgba(140, 40, 20, 0.45),
+      0 4px 12px rgba(140, 40, 20, 0.35),
       inset 0 1px 0 rgba(255, 240, 200, 0.7),
       inset 0 -1px 0 rgba(80, 20, 10, 0.35);
-  }
-  #welcome .checkin-btn:active {
-    transform: translateY(1px);
   }
 
   /* ===== 邀請函彈窗 ===== */
@@ -154,9 +173,11 @@
     display: none;
     align-items: center;
     justify-content: center;
+    padding: 16px;                              /* 手机边缘留白 */
     background: transparent;
     opacity: 0;
     transition: opacity 0.6s ease;
+    overflow-y: auto;
   }
   #invitation.show {
     display: flex;
@@ -165,28 +186,30 @@
 
   .invite-card {
     position: relative;
-    width: min(580px, 92vw);
+    width: 100%;
+    max-width: 480px;
     max-height: 92vh;
-    padding: 54px 50px 44px;
-    border-radius: 6px;
+    padding: 8vw 6vw 6vw;
+    border-radius: 12px;
     text-align: center;
     background: linear-gradient(160deg,
-      rgba(255, 245, 224, 0.82) 0%,
-      rgba(248, 233, 200, 0.75) 55%,
-      rgba(238, 212, 168, 0.72) 100%);
+      rgba(255, 245, 224, 0.85) 0%,
+      rgba(248, 233, 200, 0.78) 55%,
+      rgba(238, 212, 168, 0.75) 100%);
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow:
       0 0 0 1px rgba(200, 168, 74, 0.8),
-      0 0 0 6px rgba(255, 245, 224, 0.5),
-      0 0 0 7px rgba(168, 50, 31, 0.35),
-      0 20px 55px rgba(90, 45, 20, 0.45),
-      0 0 80px rgba(200, 168, 74, 0.3),
-      inset 0 0 60px rgba(220, 195, 140, 0.2);
+      0 0 0 5px rgba(255, 245, 224, 0.5),
+      0 0 0 6px rgba(168, 50, 31, 0.35),
+      0 18px 45px rgba(90, 45, 20, 0.45),
+      0 0 60px rgba(200, 168, 74, 0.3),
+      inset 0 0 50px rgba(220, 195, 140, 0.2);
     transform: scale(0.85) translateY(30px);
     opacity: 0;
     transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.6s ease;
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
   #invitation.show .invite-card {
     transform: scale(1) translateY(0);
@@ -196,38 +219,27 @@
   .invite-card::before {
     content: "";
     position: absolute;
-    inset: 16px;
+    inset: 12px;
     border: 1px solid rgba(200, 168, 74, 0.55);
     pointer-events: none;
-    border-radius: 3px;
-  }
-  .invite-card::after {
-    content: "";
-    position: absolute;
-    inset: 12px;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 12px 12px, rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px),
-      radial-gradient(circle at calc(100% - 12px) 12px, rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px),
-      radial-gradient(circle at 12px calc(100% - 12px), rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px),
-      radial-gradient(circle at calc(100% - 12px) calc(100% - 12px), rgba(168, 50, 31, 0.8) 2.5px, transparent 3.5px);
+    border-radius: 6px;
   }
 
   .invite-card .deco-line {
     width: 70%;
     height: 1px;
     background: linear-gradient(90deg, transparent, #a8321f, #d8b968, #a8321f, transparent);
-    margin: 22px auto 30px;
+    margin: 1em auto 1.4em;
     box-shadow: 0 0 6px rgba(168, 50, 31, 0.4);
   }
 
   .invite-title {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 2.2em;
+    font-size: clamp(1.4rem, 5.5vw, 1.9rem);
     font-weight: 600;
     color: #a8321f;
-    letter-spacing: 10px;
-    line-height: 1.6;
+    letter-spacing: 0.35em;
+    line-height: 1.5;
     text-shadow:
       0 1px 3px rgba(255, 245, 224, 1),
       0 0 12px rgba(255, 245, 224, 0.7),
@@ -238,26 +250,29 @@
   .invite-form label {
     display: block;
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 1em;
+    font-size: clamp(0.9rem, 3.4vw, 1.05rem);
     font-weight: 500;
     color: #8b5a2e;
-    letter-spacing: 5px;
-    margin-bottom: 8px;
+    letter-spacing: 0.4em;
+    margin-bottom: 0.5em;
     margin-left: 4px;
   }
   .invite-form input,
   .invite-form textarea {
     width: 100%;
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 1.15em;
+    font-size: clamp(1rem, 3.8vw, 1.15rem);
     color: #5c3a1f;
-    padding: 13px 16px;
+    padding: 0.8em 1em;
     border: 1px solid rgba(200, 168, 74, 0.7);
-    border-radius: 4px;
+    border-radius: 6px;
     background: rgba(255, 250, 235, 0.9);
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
-    letter-spacing: 2px;
+    letter-spacing: 0.1em;
+    /* 手机输入优化 */
+    -webkit-appearance: none;
+    appearance: none;
   }
   .invite-form input:focus,
   .invite-form textarea:focus {
@@ -266,24 +281,24 @@
     box-shadow: 0 0 0 3px rgba(168, 50, 31, 0.12), 0 0 12px rgba(200, 168, 74, 0.3);
   }
   .invite-form textarea {
-    min-height: 90px;
+    min-height: 80px;
     resize: vertical;
-    line-height: 1.6;
+    line-height: 1.5;
   }
-  .invite-form .field { margin-bottom: 22px; }
+  .invite-form .field { margin-bottom: 1.2em; }
 
   .submit-btn {
     display: block;
     width: 100%;
-    margin-top: 8px;
+    margin-top: 0.5em;
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 1.15em;
+    font-size: clamp(1rem, 4vw, 1.15rem);
     font-weight: 500;
     color: #fff5e0;
-    letter-spacing: 10px;
-    padding: 15px;
+    letter-spacing: 0.5em;
+    padding: 0.85em 0.5em 0.85em 1em;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     background: linear-gradient(160deg, #c8a84a, #a8321f);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
@@ -292,14 +307,16 @@
       0 0 0 3px rgba(200, 168, 74, 0.5),
       0 5px 14px rgba(140, 40, 20, 0.35),
       inset 0 1px 0 rgba(255, 240, 200, 0.5);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  .submit-btn:hover {
-    transform: translateY(-1px);
+  .submit-btn:active {
+    transform: translateY(1px) scale(0.98);
     box-shadow:
       0 0 0 1px rgba(255, 245, 224, 1),
       0 0 0 3px rgba(200, 168, 74, 0.7),
-      0 7px 20px rgba(140, 40, 20, 0.45),
+      0 3px 10px rgba(140, 40, 20, 0.4),
       inset 0 1px 0 rgba(255, 240, 200, 0.6);
   }
   .submit-btn:disabled {
@@ -313,17 +330,18 @@
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
     color: #a8321f;
     text-align: center;
-    padding: 30px 0;
+    padding: 1.5em 0;
     animation: fadeIn 0.8s ease;
   }
   .thank-you.show { display: block; }
   .thank-you .big {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 2.2em;
+    font-size: clamp(1.5rem, 6vw, 2rem);
     font-weight: 600;
-    letter-spacing: 10px;
+    letter-spacing: 0.5em;
+    padding-left: 0.5em;
     color: #a8321f;
-    margin-bottom: 14px;
+    margin-bottom: 0.5em;
     text-shadow:
       0 1px 3px rgba(255, 245, 224, 1),
       0 0 12px rgba(255, 245, 224, 0.7),
@@ -331,10 +349,10 @@
   }
   .thank-you .small {
     font-family: "Noto Serif TC", "STKaiti", "KaiTi", serif;
-    font-size: 1em;
+    font-size: clamp(0.85rem, 3.4vw, 1rem);
     font-weight: 400;
     color: #8b5a2e;
-    letter-spacing: 5px;
+    letter-spacing: 0.3em;
   }
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(15px); }
@@ -343,11 +361,11 @@
 
   .close-btn {
     position: absolute;
-    top: 20px; right: 24px;
-    width: 32px; height: 32px;
-    font-size: 1em;
+    top: 12px; right: 12px;
+    width: 38px; height: 38px;
+    font-size: 1rem;
     color: #a8321f;
-    background: rgba(255, 245, 224, 0.6);
+    background: rgba(255, 245, 224, 0.7);
     border: 1px solid rgba(168, 50, 31, 0.5);
     border-radius: 50%;
     cursor: pointer;
@@ -356,11 +374,28 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
-  .close-btn:hover {
+  .close-btn:active {
     color: #fff5e0;
     background: #a8321f;
     border-color: #a8321f;
+    transform: scale(0.95);
+  }
+
+  /* 横屏时缩小内边距 */
+  @media (orientation: landscape) and (max-height: 500px) {
+    #welcome .title-box {
+      padding: 4vw 6vw;
+    }
+    #welcome .subtitle {
+      margin-bottom: 0.8em;
+    }
+    .invite-card {
+      padding: 4vw 6vw;
+      max-height: 94vh;
+    }
   }
 </style>
 </head>
@@ -372,7 +407,7 @@
 
 <div id="goldDust"></div>
 
-<!-- 第一頁（按钮已移入框内）-->
+<!-- 第一頁 -->
 <div id="welcome">
   <div class="title-box">
     <div class="title">歡迎蒞臨</div>
@@ -413,7 +448,7 @@
 
   (function createDust() {
     const container = document.getElementById("goldDust");
-    const COUNT = 28;
+    const COUNT = 22;
     for (let i = 0; i < COUNT; i++) {
       const d = document.createElement("div");
       d.className = "dust " + (i % 3 === 0 ? "red" : "gold");
